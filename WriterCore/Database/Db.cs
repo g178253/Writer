@@ -5,7 +5,7 @@ using WriterCore.Model;
 
 namespace WriterCore
 {
-    public sealed class Db : IDb
+    internal sealed class Db : IDb
     {
         #region 数据库辅助
 
