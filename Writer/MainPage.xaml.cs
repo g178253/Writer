@@ -12,6 +12,9 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using System.Collections.ObjectModel;
+using Writer.ViewModels;
+using WriterCore;
 
 namespace Writer
 {
@@ -20,9 +23,18 @@ namespace Writer
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private ICollection<FragmentViewModel> m_fragments = new ObservableCollection<FragmentViewModel>();
         public MainPage()
         {
             this.InitializeComponent();
+            var db = DbFactory.Db;
+            var story = new Story(db);
+            foreach (var item in story.GetFragments())
+            {
+                m_fragments.Add(new FragmentViewModel(item));
+            }
+            m_fragments.Add(new FragmentViewModel(new WriterCore.Model.Fragment { Title = "123", Summary = "123456" }));
+            Fragments.ItemsSource = m_fragments;
         }
     }
 }

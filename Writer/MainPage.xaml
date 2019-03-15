@@ -26,7 +26,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListBox Grid.Row="0" Margin="3"
+        <ListBox x:Name="Fragments"
+                 Grid.Row="0" Margin="3"
                  Background="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                  ItemTemplate="{StaticResource FragmentDataTemplate}"/>
 

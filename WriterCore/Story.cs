@@ -6,45 +6,41 @@ namespace WriterCore
 {
     public sealed class Story
     {
-        private LinkedList<Fragment> m_Fragments = new LinkedList<Fragment>();
-
-        public bool Add(IDb db, Fragment fragment)
+        private IDb m_db;
+        public Story(IDb db)
         {
-            EnsureArgumentNotNull(db, fragment);
-            m_Fragments.AddLast(fragment);
-            return db.Add(fragment);
+            this.m_db = db;
         }
 
-        public bool Update(IDb db, Fragment fragment)
+        public bool Add(Fragment fragment)
         {
-            EnsureArgumentNotNull(db, fragment);
-            return db.Update(fragment);
+            EnsureArgumentNotNull(fragment);
+            return m_db.Add(fragment);
         }
 
-        public bool Delete(IDb db, Fragment fragment)
+        public bool Update(Fragment fragment)
         {
-            EnsureArgumentNotNull(db, fragment);
-            m_Fragments.Remove(fragment);
-            return db.Delete(fragment);
+            EnsureArgumentNotNull(fragment);
+            return m_db.Update(fragment);
         }
 
-        private void EnsureArgumentNotNull(IDb db, Fragment fragment)
+        public bool Delete(Fragment fragment)
         {
-            if (db == null || fragment == null)
-                throw new ArgumentNullException((db == null) ? nameof(db) : nameof(fragment));
+            EnsureArgumentNotNull(fragment);
+            return m_db.Delete(fragment);
         }
 
-        public IEnumerable<Fragment> GetFragments(IDb db)
+        private void EnsureArgumentNotNull(Fragment fragment)
         {
-            if (m_Fragments.Count == 0)
-            {
-                var all = db.FindAll();
-                foreach (var item in all)
-                {
-                    m_Fragments.AddLast(item);
-                }
-            }
-            return m_Fragments;
+            if (m_db == null || fragment == null)
+                throw new ArgumentNullException((m_db == null) ? nameof(m_db) : nameof(fragment));
+        }
+
+        public IEnumerable<Fragment> GetFragments()
+        {
+            if (m_db == null)
+                throw new ArgumentNullException(nameof(m_db));
+            return m_db.FindAll();
         }
     }
 }
