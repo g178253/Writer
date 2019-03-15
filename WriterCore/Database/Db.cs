@@ -7,6 +7,11 @@ namespace WriterCore
 {
     internal sealed class Db : IDb
     {
+        public Db()
+        {
+            InitializeDatabase();
+        }
+
         #region 数据库辅助
 
         private readonly string m_connectionString = "Filename=notebook.db";
