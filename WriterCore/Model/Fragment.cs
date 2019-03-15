@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace WriterCore
+namespace WriterCore.Model
 {
-    public sealed class Story
+    public sealed class Fragment
     {
-        public ICollection<Event> Events { get; set; }
-
         public int Id { get; set; }
         public string Title { get; set; }
         public string Summary { get; set; }

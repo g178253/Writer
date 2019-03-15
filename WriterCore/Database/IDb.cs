@@ -1,19 +1,13 @@
 ﻿using System.Collections.Generic;
+using WriterCore.Model;
 
 namespace WriterCore
 {
     public interface IDb
     {
-        void AddStory(Story story);
-        void AddEvent(Event child);
-
-        void DeleteStory(int id);
-        void DeleteEvent(int id);
-
-        void UpdateEvent(Event e);
-        void UpdateStory(Story story);
-
-        ICollection<Story> GetStories();
-        ICollection<Event> GetEvents(int storyId);
+        bool Add(Fragment fragment);
+        bool Delete(Fragment fragment);
+        bool Update(Fragment fragment);
+        IEnumerable<Fragment> FindAll();
     }
 }
