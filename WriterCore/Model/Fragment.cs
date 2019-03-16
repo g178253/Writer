@@ -4,7 +4,8 @@ namespace WriterCore.Model
 {
     public sealed class Fragment
     {
-        public int Id { get; set; }
+        public Int64 Id { get; set; }
+        public Int64 BookId { get; set; }
         public string Title { get; set; }
         public string Summary { get; set; }
         public DateTime CreateTime { get; set; }

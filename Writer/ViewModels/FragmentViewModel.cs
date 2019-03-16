@@ -5,7 +5,7 @@ namespace Writer.ViewModels
 {
     internal sealed class FragmentViewModel : NotifyPropertyChanged
     {
-        private Fragment m_model;
+        private readonly Fragment m_model;
         public FragmentViewModel(Fragment item)
         {
             m_model = item ?? new Fragment();

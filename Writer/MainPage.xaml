@@ -7,11 +7,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
-    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    Width="600" Height="400">
+    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
         <Grid.Resources>
+            <DataTemplate x:Key="BookDataTemplate" x:DataType="local:BookViewModel">
+                <Border>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Text="{x:Bind Name}"/>
+                    </StackPanel>
+                </Border>
+            </DataTemplate>
             <DataTemplate x:Key="FragmentDataTemplate" x:DataType="local:FragmentViewModel">
                 <Border>
                     <StackPanel>
@@ -28,7 +34,6 @@
 
         <ListBox x:Name="Fragments"
                  Grid.Row="0" Margin="3"
-                 Background="{ThemeResource ApplicationHeaderForegroundThemeBrush}"
                  ItemTemplate="{StaticResource FragmentDataTemplate}"/>
 
         <TextBlock Grid.Row="1" Margin="3" Text="字数：2000"/>

@@ -14,7 +14,9 @@ namespace WriterCore
 
         #region 数据库辅助
 
-        private readonly string m_connectionString = "Filename=notebook.db";
+        private readonly string m_connectionString = "Filename=notebook.db"; // 数据库名。
+        private readonly string m_books = "Books"; // 小说的表。
+        private readonly string m_fragments = "Fragments"; // 情节片断的表。
 
         public void InitializeDatabase()
         {
@@ -22,17 +24,42 @@ namespace WriterCore
             {
                 db.Open();
 
-                var cmd = "CREATE TABLE IF NOT EXISTS Fragments (" +
-                    "Id             INTEGER             PRIMARY KEY AUTOINCREMENT, " +
-                    "Title          NVARCHAR(128)       NOT NULL        DEFAULT '新作品', " +
-                    "Summary        NVARCHAR(2048)      NOT NULL        DEFAULT '这本书主要写此什么？', " +
-                    "CreateTime     NVARCHAR(32)        NOT NULL        DEFAULT  date('now'), " +
-                    "Author         NVARCHAR(64)        NOT NULL        DEFAULT '作者是谁？'" +
-                    ");";
-                ExecuteNonQuery(cmd, db);
+                if (!IsTableExist(m_books, db))
+                {
+                    var cmd = $"CREATE TABLE {m_books} (" +
+                    "Id         INTEGER   NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                    "Name       TEXT(128) NOT NULL," +
+                    "CreateTime TEXT(32)  NOT NULL DEFAULT( date('now') ) );";
+                    ExecuteNonQuery(cmd, db);
+                }
+
+                if (!IsTableExist(m_fragments, db))
+                {
+                    var cmd = $"CREATE TABLE {m_fragments} (" +
+                    "Id         INTEGER    NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                   $"BookId     INTEGER    NOT NULL REFERENCES {m_books} (Id), " +
+                    "Title      TEXT(128)  NOT NULL, " +
+                    "Summary    TEXT(2048) NOT NULL, " +
+                    "CreateTime TEXT(32)   NOT NULL DEFAULT(date('now')), " +
+                    "Author     TEXT(64)   NOT NULL );";
+                    ExecuteNonQuery(cmd, db);
+                }
 
                 db.Close();
             }
+        }
+
+        private bool IsTableExist(string tableName, SqliteConnection db)
+        {
+            var cmd = GetTableExistsCommand(tableName);
+            var sc = new SqliteCommand(cmd, db);
+            var r = (Int64)sc.ExecuteScalar();
+            return r > 0;
+        }
+
+        private string GetTableExistsCommand(string tableName)
+        {
+            return $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';";
         }
 
         private int ExecuteNonQuery(string cmd, SqliteConnection db, IDictionary<string, object> parameters = null)
@@ -99,12 +126,24 @@ namespace WriterCore
 
         #endregion
 
+        public bool Add(Book child)
+        {
+            EnsureArgumentNotNull(child);
+
+            var cmd = $"INSERT INTO {m_books} VALUES (NULL, @Name, @CreateTime);";
+            var dic = new Dictionary<string, object>();
+            dic.Add("@Name", child.Name);
+            dic.Add("@CreateTime", child.CreateTime);
+            return 0 < ExecuteNonQuery(cmd, dic);
+        }
+
         public bool Add(Fragment child)
         {
             EnsureArgumentNotNull(child);
 
-            var cmd = "INSERT INTO Fragments VALUES (NULL, @Title, @Summary, @Author, @CreateTime);";
+            var cmd = $"INSERT INTO {m_fragments} VALUES (NULL, @BookId, @Title, @Summary, @Author, @CreateTime);";
             var dic = new Dictionary<string, object>();
+            dic.Add("@BookId", child.BookId);
             dic.Add("@Title", child.Title);
             dic.Add("@Summary", child.Summary);
             dic.Add("@Author", child.Author);
@@ -112,37 +151,76 @@ namespace WriterCore
             return 0 < ExecuteNonQuery(cmd, dic);
         }
 
+        public bool Delete(Book child)
+        {
+            EnsureArgumentNotNull(child);
+
+            var cmd = $"DELETE FROM {m_books} WHERE Id = " + child.Id;
+            return 0 < ExecuteNonQuery(cmd);
+        }
+
         public bool Delete(Fragment child)
         {
             EnsureArgumentNotNull(child);
 
-            var cmd = "DELETE FROM Event WHERE Id = " + child.Id;
+            var cmd = $"DELETE FROM {m_fragments} WHERE Id = " + child.Id;
             return 0 < ExecuteNonQuery(cmd);
         }
 
-        public IEnumerable<Fragment> FindAll()
+        public IEnumerable<Book> FindBooks()
         {
-            var tableName = "Fragments";
-            var cmd = "SELECT * FROM " + tableName;
+            var cmd = "SELECT * FROM " + m_books;
+            foreach (var r in Query(cmd))
+            {
+                var s = new Book
+                {
+                    Id = r.GetInt64(0),
+                    Name = r.GetString(1),
+                    CreateTime = r.GetDateTime(2)
+                };
+                yield return s;
+            }
+        }
+
+        public IEnumerable<Fragment> FindFragments()
+        {
+            var cmd = "SELECT * FROM " + m_fragments;
             foreach (var r in Query(cmd))
             {
                 var s = new Fragment
                 {
-                    Id = r.GetInt32(0),
-                    Title = r.GetString(1),
-                    Summary = r.GetString(2),
-                    CreateTime = r.GetDateTime(3),
-                    Author = r.GetString(4)
+                    Id = r.GetInt64(0),
+                    BookId = r.GetInt64(1),
+                    Title = r.GetString(2),
+                    Summary = r.GetString(3),
+                    CreateTime = r.GetDateTime(4),
+                    Author = r.GetString(5)
                 };
                 yield return s;
             }
+        }
+
+        public bool Update(Book child)
+        {
+            EnsureArgumentNotNull(child);
+
+            var cmd = $"UPDATE {m_books} SET " +
+                "Name = @Name" +
+                "CreateTime = @CreateTime, " +
+                "WHERE Id = @Id;";
+            var dic = new Dictionary<string, object>();
+            dic.Add("@Id", child.Id);
+            dic.Add("@Name", child.Name);
+            dic.Add("@CreateTime", child.CreateTime);
+            return 0 < ExecuteNonQuery(cmd, dic);
         }
 
         public bool Update(Fragment child)
         {
             EnsureArgumentNotNull(child);
 
-            var cmd = "UPDATE Fragments SET " +
+            var cmd = $"UPDATE {m_fragments} SET " +
+                "BookId = @BookId" +
                 "Title = @Title, " +
                 "Summary = @Summary, " +
                 "CreateTime = @CreateTime, " +
@@ -150,6 +228,7 @@ namespace WriterCore
                 "WHERE Id = @Id;";
             var dic = new Dictionary<string, object>();
             dic.Add("@Id", child.Id);
+            dic.Add("@BookId", child.BookId);
             dic.Add("@Title", child.Title);
             dic.Add("@Summary", child.Summary);
             dic.Add("@CreateTime", child.CreateTime);
@@ -157,10 +236,10 @@ namespace WriterCore
             return 0 < ExecuteNonQuery(cmd, dic);
         }
 
-        private void EnsureArgumentNotNull(Fragment fragment)
+        private void EnsureArgumentNotNull(object arg)
         {
-            if (fragment == null)
-                throw new ArgumentNullException(nameof(fragment));
+            if (arg == null)
+                throw new ArgumentNullException(nameof(arg));
         }
     }
 }

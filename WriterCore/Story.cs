@@ -7,9 +7,9 @@ namespace WriterCore
     public sealed class Story
     {
         private IDb m_db;
-        public Story(IDb db)
+        public Story()
         {
-            this.m_db = db;
+            this.m_db = DbFactory.Db;
         }
 
         public bool Add(Fragment fragment)
@@ -40,7 +40,7 @@ namespace WriterCore
         {
             if (m_db == null)
                 throw new ArgumentNullException(nameof(m_db));
-            return m_db.FindAll();
+            return m_db.FindFragments();
         }
     }
 }

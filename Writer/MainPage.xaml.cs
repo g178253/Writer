@@ -27,12 +27,12 @@ namespace Writer
         public MainPage()
         {
             this.InitializeComponent();
-            var db = DbFactory.Db;
-            var story = new Story(db);
+            var story = new Story();
             foreach (var item in story.GetFragments())
             {
                 m_fragments.Add(new FragmentViewModel(item));
             }
+            m_fragments.Add(new FragmentViewModel(new WriterCore.Model.Fragment { Title = "123", Summary = "123456" }));
             m_fragments.Add(new FragmentViewModel(new WriterCore.Model.Fragment { Title = "123", Summary = "123456" }));
             Fragments.ItemsSource = m_fragments;
         }
