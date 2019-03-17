@@ -97,7 +97,8 @@ namespace Writer
 
         private void SetError(TextBlock block, string message)
         {
-            block.Text = message;
+            if (message != null)
+                block.Text = message;
             block.Visibility = (string.IsNullOrEmpty(message))
                 ? Visibility.Collapsed
                 : Visibility.Visible;

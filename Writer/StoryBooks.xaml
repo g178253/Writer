@@ -24,7 +24,7 @@
                     
                     <StackPanel>
                         <TextBlock Margin="10,3" Text="给新书起一个名字吧……"/>
-                        <TextBox x:Name="NewBookName" Margin="10,3"/>
+                        <TextBox x:Name="NewBookName" Margin="10,3" AllowFocusOnInteraction="True"/>
                         <TextBlock x:Name="ErrorAdd"
                                    Margin="10,3" Foreground="Red" Visibility="Collapsed"/>
                     </StackPanel>
@@ -49,7 +49,7 @@
 
                     <StackPanel>
                         <TextBlock Margin="10,3" Text="修改书名……"/>
-                        <TextBox x:Name="EditBookName" Margin="10,3"/>
+                        <TextBox x:Name="EditBookName" Margin="10,3" AllowFocusOnInteraction="True"/>
                         <TextBlock x:Name="ErrorEdit"
                                    Margin="10,3" Foreground="Red" Visibility="Collapsed"/>
                     </StackPanel>
