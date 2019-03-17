@@ -12,13 +12,14 @@
         <Grid.Resources>
             <DataTemplate x:Key="DataTemplate_Fragment" x:DataType="local:FragmentViewModel">
                 <StackPanel>
-                    <TextBox FontWeight="Bold" BorderThickness="0" Text="{x:Bind Title}"/>
+                    <TextBox FontWeight="Bold" BorderThickness="0"
+                             Text="{x:Bind Title, Mode=TwoWay}"/>
                     <Line X1="0" X2="200" Stroke="Black"/>
                     <TextBox BorderThickness="0"
                              TextWrapping="Wrap" AcceptsReturn="True"
                              Width="200" Height="200"
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             Text="{x:Bind Summary}"/>
+                             Text="{x:Bind Summary, Mode=TwoWay}"/>
                 </StackPanel>
             </DataTemplate>
             <ItemsPanelTemplate x:Key="ItemsPanelTemplate_Horizontal">

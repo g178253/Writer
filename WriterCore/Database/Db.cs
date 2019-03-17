@@ -214,8 +214,8 @@ namespace WriterCore
             EnsureArgumentNotNull(child);
 
             var cmd = $"UPDATE {m_books} SET " +
-                "Name = @Name" +
-                "CreateTime = @CreateTime, " +
+                "Name = @Name, " +
+                "CreateTime = @CreateTime " +
                 "WHERE Id = @Id;";
             var dic = new Dictionary<string, object>();
             dic.Add("@Id", child.Id);
@@ -229,7 +229,7 @@ namespace WriterCore
             EnsureArgumentNotNull(child);
 
             var cmd = $"UPDATE {m_fragments} SET " +
-                "BookId = @BookId" +
+                "BookId = @BookId, " +
                 "Title = @Title, " +
                 "Summary = @Summary, " +
                 "CreateTime = @CreateTime, " +

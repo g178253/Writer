@@ -16,7 +16,7 @@
             <DataTemplate x:Key="DataTemplate_Book" x:DataType="local:BookViewModel">
                 <TextBlock Margin="10" Width="150" Height="200"
                            FontWeight="Bold" TextWrapping="Wrap"
-                           Text="{x:Bind Name}"/>
+                           Text="{x:Bind Name, Mode=OneWay}"/>
             </DataTemplate>
             <Flyout x:Key="Flyout_AddNewBook"
                     LightDismissOverlayMode="On">
