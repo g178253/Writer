@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="Writer.Storyboard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Writer.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate x:Key="DataTemplate_Fragment" x:DataType="local:FragmentViewModel">
+                <StackPanel>
+                    <TextBox FontWeight="Bold" BorderThickness="0" Text="{x:Bind Title}"/>
+                    <Line X1="0" X2="200" Stroke="Black"/>
+                    <TextBox BorderThickness="0"
+                             TextWrapping="Wrap" AcceptsReturn="True"
+                             Width="200" Height="200"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             Text="{x:Bind Summary}"/>
+                </StackPanel>
+            </DataTemplate>
+            <ItemsPanelTemplate x:Key="ItemsPanelTemplate_Horizontal">
+                <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar Grid.Row="0">
+            <AppBarToggleButton Icon="Save" Label="自动保存"/>
+            <AppBarButton Icon="FullScreen" Label="全屏显示"/>
+        </CommandBar>
+
+        <GridView x:Name="Fragments"
+                  Grid.Row="1"
+                  ItemTemplate="{StaticResource DataTemplate_Fragment}"
+                  ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"/>
+
+        <TextBlock Grid.Row="2" Text="字数：2000"/>
+    </Grid>
+</Page>

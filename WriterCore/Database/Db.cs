@@ -20,10 +20,8 @@ namespace WriterCore
 
         public void InitializeDatabase()
         {
-            using (var db = new SqliteConnection(m_connectionString))
+            ConnectDb(db =>
             {
-                db.Open();
-
                 if (!IsTableExist(m_books, db))
                 {
                     var cmd = $"CREATE TABLE {m_books} (" +
@@ -44,22 +42,21 @@ namespace WriterCore
                     "Author     TEXT(64)   NOT NULL );";
                     ExecuteNonQuery(cmd, db);
                 }
-
-                db.Close();
-            }
+            });
         }
 
         private bool IsTableExist(string tableName, SqliteConnection db)
         {
-            var cmd = GetTableExistsCommand(tableName);
+            var cmd = $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';";
             var sc = new SqliteCommand(cmd, db);
             var r = (Int64)sc.ExecuteScalar();
             return r > 0;
         }
 
-        private string GetTableExistsCommand(string tableName)
+        private object ExecuteScalar(string cmd, SqliteConnection db)
         {
-            return $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';";
+            var sc = new SqliteCommand(cmd, db);
+            return sc.ExecuteScalar();
         }
 
         private int ExecuteNonQuery(string cmd, SqliteConnection db, IDictionary<string, object> parameters = null)
@@ -78,16 +75,28 @@ namespace WriterCore
         private int ExecuteNonQuery(string cmd, IDictionary<string, object> parameters = null)
         {
             var count = 0;
-            using (var db = new SqliteConnection(m_connectionString))
+            ConnectDb(db =>
             {
-                db.Open();
-
                 count = ExecuteNonQuery(cmd, db, parameters);
-
-                db.Close();
-            }
-
+            });
             return count;
+        }
+
+        private object ExecuteScalar(string cmd)
+        {
+            object r = null;
+            ConnectDb(db =>
+            {
+                r = ExecuteScalar(cmd, db);
+            });
+            return r;
+        }
+
+        private Int64 GetLastInsertId(string tableName)
+        {
+            var cmd = "SELECT last_insert_rowid() FROM " + tableName;
+            var r = ExecuteScalar(cmd);
+            return (Int64)r;
         }
 
         private IEnumerable<SqliteDataReader> Query(string cmd)
@@ -108,25 +117,21 @@ namespace WriterCore
             }
         }
 
-        private int Count(string tableName, string where = null)
+        private void ConnectDb(Action<SqliteConnection> action)
         {
-            var count = 0;
-            var cmd = "SELECT COUNT(*) FROM " + tableName;
-            if (where != null)
+            using (var db = new SqliteConnection(m_connectionString))
             {
-                cmd += " WHERE " + where;
-            }
+                db.Open();
 
-            foreach (var r in Query(cmd))
-            {
-                count += r.GetInt32(0);
+                action?.Invoke(db);
+
+                db.Close();
             }
-            return count;
         }
 
         #endregion
 
-        public bool Add(Book child)
+        public Int64 Add(Book child)
         {
             EnsureArgumentNotNull(child);
 
@@ -134,10 +139,12 @@ namespace WriterCore
             var dic = new Dictionary<string, object>();
             dic.Add("@Name", child.Name);
             dic.Add("@CreateTime", child.CreateTime);
-            return 0 < ExecuteNonQuery(cmd, dic);
+            var r = ExecuteNonQuery(cmd, dic);
+            if (r > 0) return GetLastInsertId(m_books);
+            else return -1;
         }
 
-        public bool Add(Fragment child)
+        public Int64 Add(Fragment child)
         {
             EnsureArgumentNotNull(child);
 
@@ -148,7 +155,9 @@ namespace WriterCore
             dic.Add("@Summary", child.Summary);
             dic.Add("@Author", child.Author);
             dic.Add("@CreateTime", child.CreateTime);
-            return 0 < ExecuteNonQuery(cmd, dic);
+            var r = ExecuteNonQuery(cmd, dic);
+            if (r > 0) return GetLastInsertId(m_books);
+            else return -1;
         }
 
         public bool Delete(Book child)
@@ -240,6 +249,13 @@ namespace WriterCore
         {
             if (arg == null)
                 throw new ArgumentNullException(nameof(arg));
+        }
+
+        public bool ContainsBook(string bookName)
+        {
+            var cmd = $"SELECT COUNT(*) FROM {m_books} WHERE Name='{bookName}';";
+            var r = (Int64)ExecuteScalar(cmd);
+            return r > 0;
         }
     }
 }
