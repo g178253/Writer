@@ -14,7 +14,7 @@
                 <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal"/>
             </ItemsPanelTemplate>
             <DataTemplate x:Key="DataTemplate_Book" x:DataType="local:BookViewModel">
-                <TextBlock Margin="10" Width="200" Height="150"
+                <TextBlock Margin="10" Width="150" Height="200"
                            FontWeight="Bold" TextWrapping="Wrap"
                            Text="{x:Bind Name}"/>
             </DataTemplate>
@@ -25,7 +25,7 @@
                     <StackPanel>
                         <TextBlock Margin="10,3" Text="给新书起一个名字吧……"/>
                         <TextBox x:Name="NewBookName" Margin="10,3"/>
-                        <TextBlock x:Name="Error"
+                        <TextBlock x:Name="ErrorAdd"
                                    Margin="10,3" Foreground="Red" Visibility="Collapsed"/>
                     </StackPanel>
 
@@ -38,27 +38,60 @@
                             </Style>
                         </StackPanel.Resources>
                         <Button Content="确定" Click="AddNewBook_Click"/>
-                        <Button Content="取消" Click="Cancel_Click"/>
+                        <Button Content="取消" Click="AddCancel_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Flyout>
+            <Flyout x:Key="Flyout_EditBook"
+                    LightDismissOverlayMode="On"
+                    Opening="FlyoutEdit_Opening">
+                <StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Margin="10,3" Text="修改书名……"/>
+                        <TextBox x:Name="EditBookName" Margin="10,3"/>
+                        <TextBlock x:Name="ErrorEdit"
+                                   Margin="10,3" Foreground="Red" Visibility="Collapsed"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="Margin" Value="10"/>
+                                <Setter Property="Padding" Value="30,3"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <Button Content="确定" Click="EditBookName_Click"/>
+                        <Button Content="取消" Click="EditCancel_Click"/>
                     </StackPanel>
                 </StackPanel>
             </Flyout>
         </Grid.Resources>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <GridView x:Name="Books"
+        <CommandBar>
+            <AppBarButton x:Name="Delete"
+                          Icon="Delete" Label="删除作品"
+                          Click="Delete_Click"/>
+            <AppBarButton x:Name="Edit"
+                          Icon="Edit" Label="修改作品名"
+                          Flyout="{StaticResource Flyout_EditBook}"/>
+            <AppBarButton x:Name="Add"
+                          Icon="Add" Label="添加新作品"
+                          Flyout="{StaticResource Flyout_AddNewBook}"/>
+        </CommandBar>
+
+        <GridView x:Name="Books" Grid.Row="1"
                   ItemTemplate="{StaticResource DataTemplate_Book}"
-                  ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"/>
+                  ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"
+                  SelectionChanged="Books_SelectionChanged"
+                  PointerReleased="Books_PointerReleased"/>
 
-        <!-- 浮动按钮：必须放在 GridView 下面，否则将被挡住 -->
-        <Button x:Name="AddNewBook"
-                HorizontalAlignment="Right" VerticalAlignment="Top"
-                Margin="10" Padding="10"
-                Content="+" FontSize="20"
-                Flyout="{StaticResource Flyout_AddNewBook}"/>
-
-        <TextBlock x:Name="Status" Grid.Row="1" Margin="10"/>
+        <TextBlock x:Name="Status" Grid.Row="2" Margin="10"/>
     </Grid>
 </Page>

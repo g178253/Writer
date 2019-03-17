@@ -5,17 +5,18 @@ namespace Writer.ViewModels
 {
     internal sealed class BookViewModel : NotifyPropertyChanged
     {
-        private readonly Book m_book;
         public BookViewModel(Book book)
         {
-            m_book = book ?? new Book();
-            m_book.CreateTime = DateTime.Now;
+            Model = book ?? new Book();
+            Model.CreateTime = DateTime.Now;
         }
+
+        public Book Model { get; }
 
         public string Name
         {
-            get { return m_book.Name; }
-            set { m_book.Name = value; OnPropertyChanged(); }
+            get { return Model.Name; }
+            set { Model.Name = value; OnPropertyChanged(); }
         }
     }
 }
