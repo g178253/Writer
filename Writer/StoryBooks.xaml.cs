@@ -178,10 +178,10 @@ namespace Writer
 
             var book = GetSelectedBook();
             book.Name = newName;
-            if (!m_story.Update(book.Model))
-            {
+            if (m_story.Update(book.Model))
+                EditCancel_Click(null, null);
+            else
                 SetEditError($"保存作品【{newName}】失败");
-            }
         }
 
         // 取消编辑图书。
