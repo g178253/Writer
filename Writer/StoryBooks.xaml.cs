@@ -65,7 +65,7 @@ namespace Writer
             SetBookCount(m_list.Count);
             SetAddError(null);
 
-            Frame.Navigate(typeof(Storyboard), m_story);
+            Outline_Click(null, null);
         }
 
         private BookViewModel CreateNewBook(string bookName)
@@ -133,6 +133,7 @@ namespace Writer
             Add.IsEnabled = !bookSelected;
             Edit.IsEnabled = bookSelected;
             Delete.IsEnabled = bookSelected;
+            Outline.IsEnabled = bookSelected;
         }
 
         // 取消添加新作品。
@@ -222,6 +223,12 @@ namespace Writer
                 m_list.Remove(book);
                 SetBookCount(m_list.Count);
             }
+        }
+
+        // 进入大纲视图。
+        private void Outline_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(Storyboard), m_story);
         }
     }
 }
