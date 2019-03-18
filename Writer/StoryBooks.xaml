@@ -86,7 +86,7 @@
                           Flyout="{StaticResource Flyout_AddNewBook}"/>
             <AppBarSeparator/>
             <AppBarButton x:Name="Outline"
-                          Icon="Bullets" Label="进入大纲"
+                          Icon="List" Label="进入大纲"
                           Click="Outline_Click"/>
         </CommandBar>
 

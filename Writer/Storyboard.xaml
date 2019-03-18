@@ -10,6 +10,9 @@
 
     <Grid>
         <Grid.Resources>
+            <!--<DataTemplate x:Key="DataTemplate_Outline">
+                <TreeViewItem Content="{x:Bind Name}"/>
+            </DataTemplate>-->
             <DataTemplate x:Key="DataTemplate_Fragment" x:DataType="local:FragmentViewModel">
                 <StackPanel>
                     <TextBox FontWeight="Bold" BorderThickness="0"
@@ -31,17 +34,35 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <CommandBar Grid.Row="0">
-            <AppBarToggleButton Icon="Save" Label="自动保存"/>
-            <AppBarButton Icon="FullScreen" Label="全屏显示"/>
-        </CommandBar>
+        <SplitView Grid.RowSpan="3" IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="260">
+            <SplitView.Pane>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TreeView x:Name="Outline" SelectionMode="Multiple"/>
+
+                    <CommandBar Grid.Row="1">
+                        <AppBarButton Icon="Delete" Label="删除"/>
+                        <AppBarButton Icon="NewFolder" Label="添加目录"/>
+                        <AppBarButton Icon="Document" Label="添加文档"/>
+                    </CommandBar>
+                </Grid>
+            </SplitView.Pane>
+        </SplitView>
 
         <GridView x:Name="Fragments"
                   Grid.Row="1"
                   ItemTemplate="{StaticResource DataTemplate_Fragment}"
                   ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"/>
 
-        <TextBlock Grid.Row="2" Text="字数：2000"/>
+        <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" Text="字数：2000"/>
     </Grid>
 </Page>

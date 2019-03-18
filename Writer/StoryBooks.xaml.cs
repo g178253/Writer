@@ -228,7 +228,8 @@ namespace Writer
         // 进入大纲视图。
         private void Outline_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(Storyboard), m_story);
+            var book = GetSelectedBook();
+            Frame.Navigate(typeof(Storyboard), book);
         }
     }
 }
