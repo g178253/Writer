@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 using Writer.ViewModels;
 using WriterCore;
@@ -16,7 +18,10 @@ namespace Writer
     {
         private readonly Story m_story;
         private readonly ObservableCollection<BookViewModel> m_list;
-        private string m_bookName;
+        private BookViewModel m_currentBook;
+        private string m_lastName;
+        private bool m_isEdit;
+
         public StoryBooks()
         {
             this.InitializeComponent();
@@ -28,7 +33,6 @@ namespace Writer
 
             FillExistingBooks(m_story, m_list);
             SetBookCount(m_list.Count);
-            SetButtonStatus(false);
         }
 
         private void SetBookCount(int bookCount)
@@ -38,7 +42,8 @@ namespace Writer
 
         private void FillExistingBooks(Story story, ObservableCollection<BookViewModel> list)
         {
-            foreach (var item in story.GetBooks())
+            var books = story.GetBooks();
+            foreach (var item in books)
             {
                 list.Add(new BookViewModel(item));
             }
@@ -47,61 +52,40 @@ namespace Writer
         // 添加新作品。
         private void AddNewBook_Click(object sender, RoutedEventArgs e)
         {
-            var title = NewBookName.Text;
-            if (string.IsNullOrEmpty(title))
-            {
-                SetAddError("请输入新作品的书名");
-                return;
-            }
+            m_isEdit = false;
 
-            var m = CreateNewBook(title);
-            if (m == null)
-            {
-                SetAddError($"新作品【{title}】创建失败");
-                return;
-            }
+            m_currentBook = new BookViewModel();
+            m_list.Add(m_currentBook);
 
-            m_list.Add(m);
-            SetBookCount(m_list.Count);
-            SetAddError(null);
-
-            Outline_Click(null, null);
+            BeginEditBookName();
         }
 
-        private BookViewModel CreateNewBook(string bookName)
+        private void CreateNewBook()
         {
+            if (m_currentBook == null)
+                throw new ArgumentNullException(nameof(m_currentBook));
+
+            var bookName = m_currentBook.NewName;
+            if (string.IsNullOrEmpty(bookName))
+            {
+                SetError("请输入新作品的书名");
+                return;
+            }
+
             if (m_story.Contains(bookName))
             {
-                SetAddError($"作品【{bookName}】已存在");
-                return null;
+                SetError($"作品【{bookName}】已存在");
+                return;
             }
 
             var m = m_story.Add(bookName);
             if (m != null)
             {
-                return new BookViewModel(m);
+                m_currentBook.SetModel(m);
             }
 
-            return null;
-        }
-
-        private void SetAddError(string message)
-        {
-            SetError(ErrorAdd, message);
-        }
-
-        private void SetEditError(string message)
-        {
-            SetError(ErrorEdit, message);
-        }
-
-        private void SetError(TextBlock block, string message)
-        {
-            if (message != null)
-                block.Text = message;
-            block.Visibility = (string.IsNullOrEmpty(message))
-                ? Visibility.Collapsed
-                : Visibility.Visible;
+            SetBookCount(m_list.Count);
+            EndEditBookName();
         }
 
         private async Task ShowErrorAsync(string message)
@@ -128,87 +112,113 @@ namespace Writer
             return r == ContentDialogResult.Primary;
         }
 
-        private void SetButtonStatus(bool bookSelected)
+        #region 编辑图书名
+
+        // 开始编辑书名。
+        private void BeginEditBookName_Click(object sender, RoutedEventArgs e)
         {
-            Add.IsEnabled = !bookSelected;
-            Edit.IsEnabled = bookSelected;
-            Delete.IsEnabled = bookSelected;
-            Outline.IsEnabled = bookSelected;
+            m_isEdit = true;
+            BeginEditBookName();
         }
 
-        // 取消添加新作品。
-        private void AddCancel_Click(object sender, RoutedEventArgs e)
+        // 添加、编辑或取消。
+        private void EditBookName_KeyUp(object sender, KeyRoutedEventArgs e)
         {
-            Add.Flyout.Hide();
-        }
-
-        private BookViewModel GetSelectedBook()
-        {
-            var book = Books.SelectedItem as BookViewModel;
-            if (book == null)
-                throw new ArgumentNullException(nameof(book));
-            return book;
-        }
-
-        // 当编辑菜单即将打开时发生。
-        private void FlyoutEdit_Opening(object sender, object e)
-        {
-            var book = GetSelectedBook();
-            m_bookName = book.Name;
-            EditBookName.Text = m_bookName;
-        }
-
-        // 编辑图书名。
-        private void EditBookName_Click(object sender, RoutedEventArgs e)
-        {
-            if (m_bookName == null)
-                throw new ArgumentNullException(nameof(m_bookName));
-
-            var newName = EditBookName.Text;
-            if (newName == m_bookName)
+            if (e.Key == VirtualKey.Escape)
             {
-                SetEditError("作品名并未修改");
+                CancelEdit();
+            }
+
+            if (e.Key == VirtualKey.Enter)
+            {
+                AddOrEditBook();
+            }
+        }
+
+        // 添加、编辑图书。
+        private void Books_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (m_currentBook != null)
+                AddOrEditBook();
+        }
+
+        private void AddOrEditBook()
+        {
+            if (m_isEdit)
+                EditBookName();
+            else
+                CreateNewBook();
+        }
+
+        private void BeginEditBookName()
+        {
+            m_currentBook.InEdit = true;
+            m_currentBook.NotInEdit = false;
+            m_lastName = m_currentBook.Name;
+            m_currentBook.NewName = m_lastName;
+        }
+
+        private void EditBookName()
+        {
+            if (m_currentBook == null || m_currentBook.NewName == null)
+                throw new ArgumentNullException((m_currentBook == null) ? nameof(m_currentBook) : nameof(m_currentBook.NewName));
+
+            if (m_currentBook.NotInEdit) return;
+
+            var newName = m_currentBook.NewName;
+            if (newName == m_lastName)
+            {
+                SetError("作品名并未修改");
                 return;
             }
 
             if (m_story.Contains(newName))
             {
-                SetEditError($"作品【{newName}】已经存在");
+                SetError($"作品【{newName}】已经存在");
                 return;
             }
 
-            var book = GetSelectedBook();
+            var book = m_currentBook;
             book.Name = newName;
             if (m_story.Update(book.Model))
-                EditCancel_Click(null, null);
+                EndEditBookName();
             else
-                SetEditError($"保存作品【{newName}】失败");
+                SetError($"保存作品【{newName}】失败");
         }
 
-        // 取消编辑图书。
-        private void EditCancel_Click(object sender, RoutedEventArgs e)
+        private void EndEditBookName()
         {
-            Edit.Flyout.Hide();
+            m_currentBook.InEdit = false;
+            m_currentBook.NotInEdit = true;
+            m_currentBook.InError = false;
+            m_currentBook.Error = null;
         }
 
-        // 选中图书。
-        private void Books_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CancelEdit()
         {
-            var r = e.AddedItems.Count > 0;
-            SetButtonStatus(r);
+            if (m_isEdit)
+            {
+                EndEditBookName();
+            }
+            else
+            {
+                m_list.Remove(m_currentBook);
+                SetBookCount(m_list.Count);
+            }
         }
 
-        // 取消选中图书。
-        private void Books_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        private void SetError(string v)
         {
-            if (Books.SelectedItem != null)
-                Books.SelectedItem = null;
+            m_currentBook.InError = true;
+            m_currentBook.Error = v;
         }
+
+        #endregion
 
         // 删除作品。
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var book = GetSelectedBook();
+            var book = m_currentBook;
             var r = await ShowWarningAsync(
                 $"删除作品【{book.Name}】后，将无法恢复。\n\n删除【{book.Name}】吗？",
                 "是的");
@@ -228,8 +238,23 @@ namespace Writer
         // 进入大纲视图。
         private void Outline_Click(object sender, RoutedEventArgs e)
         {
-            var book = GetSelectedBook();
+            var book = m_currentBook;
             Frame.Navigate(typeof(Storyboard), book);
+        }
+
+        // 右键选中图书。
+        private void Books_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            m_currentBook = (e.OriginalSource as FrameworkElement).DataContext as BookViewModel;
+        }
+
+        // 左键进入大纲视图。
+        private void Books_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0) return;
+
+            m_currentBook = e.AddedItems[0] as BookViewModel;
+            Outline_Click(null, null);
         }
     }
 }
