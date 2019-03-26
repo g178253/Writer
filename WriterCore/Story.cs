@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+
+using WriterCore.Database;
 using WriterCore.Model;
 
 namespace WriterCore
@@ -23,7 +25,7 @@ namespace WriterCore
 
             var m = new Book
             {
-                Name = bookName,
+                Title = bookName,
                 CreateTime = DateTime.Now
             };
 
@@ -80,11 +82,11 @@ namespace WriterCore
             return m_db.FindBooks();
         }
 
-        public IEnumerable<Fragment> GetFragments()
+        public IEnumerable<Catalog> GetCatalogs(Int64 bookId)
         {
             if (m_db == null)
                 throw new ArgumentNullException(nameof(m_db));
-            return m_db.FindFragments();
+            return m_db.FindCatalogs(bookId);
         }
     }
 }

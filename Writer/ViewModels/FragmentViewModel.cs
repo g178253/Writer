@@ -20,8 +20,8 @@ namespace Writer.ViewModels
 
         public string Summary
         {
-            get { return m_model.Summary; }
-            set { m_model.Summary = value; OnPropertyChanged(); }
+            get { return m_model.Content; }
+            set { m_model.Content = value; OnPropertyChanged(); }
         }
     }
 }

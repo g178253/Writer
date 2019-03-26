@@ -1,24 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 using WriterCore.Model;
 
 namespace Writer.ViewModels
 {
-    internal sealed class BookViewModel : NotifyPropertyChanged
+    internal sealed class ItemViewModel : NotifyPropertyChanged
     {
-        public BookViewModel(Book book = null)
+        private ICollection<ItemViewModel> m_items;
+        public ItemViewModel(IOutline model = null)
         {
-            SetModel(book);
+            SetModel(model);
         }
 
-        public Book Model { get; private set; }
+        public IOutline Model { get; private set; }
 
-        internal void SetModel(Book book)
+        internal void SetModel(IOutline model)
         {
-            if (book != null)
+            if (model != null)
             {
-                Name = book.Title;
-                Model = book;
-                Model.CreateTime = DateTime.Now;
+                Name = model.Title;
+                Model = model;
             }
         }
 
@@ -62,6 +65,18 @@ namespace Writer.ViewModels
         {
             get { return m_editError; }
             set { m_editError = value; OnPropertyChanged(); }
+        }
+
+        public void InitChildren()
+        {
+            if (m_items == null)
+                m_items = new ObservableCollection<ItemViewModel>();
+        }
+
+        public ICollection<ItemViewModel> Children
+        {
+            get { return m_items; }
+            set { m_items = value; OnPropertyChanged(); }
         }
     }
 }

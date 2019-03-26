@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using WriterCore.Model;
 
-namespace WriterCore
+namespace WriterCore.Database
 {
     public interface IDb
     {
@@ -14,6 +14,7 @@ namespace WriterCore
         bool Update(Fragment fragment);
         bool ContainsBook(string bookName);
         IEnumerable<Book> FindBooks();
-        IEnumerable<Fragment> FindFragments();
+        IEnumerable<Catalog> FindCatalogs(Int64 bookId);
+        IEnumerable<Fragment> FindFragments(Int64 bookId, Int64 catalogId = -1);
     }
 }

@@ -2,67 +2,60 @@
     x:Class="Writer.Storyboard"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Writer.ViewModels"
+    xmlns:local="using:Writer"
+    xmlns:vm="using:Writer.ViewModels"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Page.Resources>
+    
     <Grid>
-        <Grid.Resources>
-            <!--<DataTemplate x:Key="DataTemplate_Outline">
-                <TreeViewItem Content="{x:Bind Name}"/>
-            </DataTemplate>-->
-            <DataTemplate x:Key="DataTemplate_Fragment" x:DataType="local:FragmentViewModel">
-                <StackPanel>
-                    <TextBox FontWeight="Bold" BorderThickness="0"
-                             Text="{x:Bind Title, Mode=TwoWay}"/>
-                    <Line X1="0" X2="200" Stroke="Black"/>
-                    <TextBox BorderThickness="0"
-                             TextWrapping="Wrap" AcceptsReturn="True"
-                             Width="200" Height="200"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             Text="{x:Bind Summary, Mode=TwoWay}"/>
-                </StackPanel>
-            </DataTemplate>
-            <ItemsPanelTemplate x:Key="ItemsPanelTemplate_Horizontal">
-                <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-        </Grid.Resources>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <SplitView Grid.RowSpan="3" IsPaneOpen="True" DisplayMode="Inline" OpenPaneLength="260">
+        <SplitView IsPaneOpen="True" DisplayMode="CompactInline" OpenPaneLength="260">
             <SplitView.Pane>
                 <Grid>
+                    <Grid.Resources>
+                        <DataTemplate x:Key="DataTemplate_Outline" x:DataType="vm:ItemViewModel">
+                            <Grid>
+                                <muxc:TreeViewItem ItemsSource="{x:Bind Children}"
+                                                   Content="{x:Bind Name}"
+                                                   Visibility="{x:Bind NotInEdit, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                                <StackPanel Visibility="{x:Bind InEdit, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
+                                    <TextBox TextWrapping="Wrap"
+                                             Text="{x:Bind NewName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <TextBlock TextWrapping="Wrap"
+                                               Foreground="Red"
+                                               Text="{x:Bind Error, Mode=OneWay}"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </Grid.Resources>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TreeView x:Name="Outline" SelectionMode="Multiple"/>
+                    <muxc:TreeView x:Name="Outline"
+                                   SelectionMode="Multiple"
+                                   ItemTemplate="{StaticResource DataTemplate_Outline}"/>
 
                     <CommandBar Grid.Row="1">
-                        <AppBarButton Icon="Delete" Label="删除"/>
-                        <AppBarButton Icon="NewFolder" Label="添加目录"/>
-                        <AppBarButton Icon="Document" Label="添加文档"/>
+                        <AppBarButton Icon="Delete" Label="删除"
+                                      Click="AppBarButton_Click"/>
+                        <AppBarButton Icon="NewFolder" Label="添加目录"
+                                      Click="AddNewCatalog_Click"/>
+                        <AppBarButton Icon="Document" Label="添加文档"
+                                      Click="AddNewDocument_Click"/>
                     </CommandBar>
                 </Grid>
             </SplitView.Pane>
+            <SplitView.Content>
+                <Frame x:Name="DetailsFrame"/>
+            </SplitView.Content>
         </SplitView>
-
-        <GridView x:Name="Fragments"
-                  Grid.Row="1"
-                  ItemTemplate="{StaticResource DataTemplate_Fragment}"
-                  ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"/>
-
-        <TextBlock Grid.Row="2" Grid.Column="1" Margin="3" Text="字数：2000"/>
     </Grid>
 </Page>

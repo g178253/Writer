@@ -11,7 +11,7 @@
     <AssemblyName>Writer</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17763.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -119,8 +119,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OutlineView.xaml.cs">
+      <DependentUpon>OutlineView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storyboard.xaml.cs">
@@ -130,8 +134,7 @@
       <DependentUpon>StoryBooks.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\BookViewModel.cs" />
-    <Compile Include="ViewModels\FileViewModel.cs" />
-    <Compile Include="ViewModels\FolderViewModel.cs" />
+    <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\FragmentViewModel.cs" />
     <Compile Include="ViewModels\NotifyPropertyChanged.cs" />
   </ItemGroup>
@@ -160,6 +163,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="OutlineView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Storyboard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -171,7 +178,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.3</Version>
+      <Version>6.2.8</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.0.181018004</Version>
     </PackageReference>
     <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3">
       <Version>1.1.13</Version>
