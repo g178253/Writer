@@ -29,25 +29,11 @@ namespace Writer.ViewModels
             set { m_name = value; OnPropertyChanged(); }
         }
 
-        private string m_newName;
-        public string NewName
+        private bool m_isReadOnly = true;
+        public bool IsReadOnly
         {
-            get { return m_newName; }
-            set { m_newName = value; OnPropertyChanged(); }
-        }
-
-        private bool m_inEdit;
-        public bool InEdit
-        {
-            get { return m_inEdit; }
-            set { m_inEdit = value; OnPropertyChanged(); }
-        }
-
-        private bool m_notInEdit = true;
-        public bool NotInEdit
-        {
-            get { return m_notInEdit; }
-            set { m_notInEdit = value; OnPropertyChanged(); }
+            get { return m_isReadOnly; }
+            set { m_isReadOnly = value; OnPropertyChanged(); }
         }
 
         private bool m_inError;

@@ -16,21 +16,19 @@
     <Grid>
         <Grid.Resources>
             <DataTemplate x:Key="DataTemplate_Book" x:DataType="vm:BookViewModel">
-                <Grid Margin="10" Width="150" Height="200">
-                    <TextBlock Margin="13,5,5,5"
-                               FontWeight="Bold" TextWrapping="Wrap"
-                               Text="{x:Bind Name, Mode=OneWay}"
-                               Visibility="{x:Bind NotInEdit, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
-                    <!-- 编辑书名时，覆盖上面的 TextBlock -->
-                    <StackPanel Visibility="{x:Bind InEdit, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
-                        <TextBox TextWrapping="Wrap"
-                                 Text="{x:Bind NewName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                <Grid>
+                    <StackPanel Margin="10" Width="150" Height="200">
+                        <TextBox FontWeight="Bold" TextWrapping="Wrap" BorderThickness="0"
+                                 PlaceholderText="请输入新作品的标题"
+                                 Text="{x:Bind Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{x:Bind IsReadOnly, Mode=OneWay}"
                                  KeyUp="EditBookName_KeyUp"/>
-                        <TextBlock Text="{x:Bind Error, Mode=OneWay}"
-                                   Margin="0,5" Foreground="Red"
-                                   TextWrapping="Wrap"
+                        <TextBlock Margin="0,5" Foreground="Red" TextWrapping="Wrap"
+                                   Text="{x:Bind Error, Mode=OneWay}"
                                    Visibility="{x:Bind InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
                     </StackPanel>
+                    <!-- 用于覆盖文本框 -->
+                    <Border Background="Transparent" Visibility="{x:Bind IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
                 </Grid>
             </DataTemplate>
             <MenuFlyout x:Key="MenuFlyout_Book">
@@ -58,7 +56,6 @@
         <GridView x:Name="Books"
                   ItemTemplate="{StaticResource DataTemplate_Book}"
                   ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"
-                  Tapped="Books_Tapped"
                   RightTapped="Books_RightTapped"
                   SelectionChanged="Books_SelectionChanged"/>
 

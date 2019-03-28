@@ -65,7 +65,7 @@ namespace Writer
             if (m_currentBook == null)
                 throw new ArgumentNullException(nameof(m_currentBook));
 
-            var bookName = m_currentBook.NewName;
+            var bookName = m_currentBook.Name;
             if (string.IsNullOrEmpty(bookName))
             {
                 SetError("请输入新作品的书名");
@@ -135,13 +135,6 @@ namespace Writer
             }
         }
 
-        // 添加、编辑图书。
-        private void Books_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (m_currentBook != null)
-                AddOrEditBook();
-        }
-
         private void AddOrEditBook()
         {
             if (m_isEdit)
@@ -152,20 +145,24 @@ namespace Writer
 
         private void BeginEditBookName()
         {
-            m_currentBook.InEdit = true;
-            m_currentBook.NotInEdit = false;
+            m_currentBook.IsReadOnly = false;
             m_lastName = m_currentBook.Name;
-            m_currentBook.NewName = m_lastName;
         }
 
         private void EditBookName()
         {
-            if (m_currentBook == null || m_currentBook.NewName == null)
-                throw new ArgumentNullException((m_currentBook == null) ? nameof(m_currentBook) : nameof(m_currentBook.NewName));
+            if (m_currentBook == null || m_lastName == null)
+                throw new ArgumentNullException((m_currentBook == null) ? nameof(m_currentBook) : nameof(m_lastName));
 
-            if (m_currentBook.NotInEdit) return;
+            if (m_currentBook.IsReadOnly) return;
 
-            var newName = m_currentBook.NewName;
+            var newName = m_currentBook.Name;
+            if (string.IsNullOrEmpty(newName))
+            {
+                SetError("请输入新的作品名");
+                return;
+            }
+
             if (newName == m_lastName)
             {
                 SetError("作品名并未修改");
@@ -188,8 +185,7 @@ namespace Writer
 
         private void EndEditBookName()
         {
-            m_currentBook.InEdit = false;
-            m_currentBook.NotInEdit = true;
+            m_currentBook.IsReadOnly = true;
             m_currentBook.InError = false;
             m_currentBook.Error = null;
         }
@@ -242,12 +238,6 @@ namespace Writer
             Frame.Navigate(typeof(Storyboard), book);
         }
 
-        // 右键选中图书。
-        private void Books_RightTapped(object sender, RightTappedRoutedEventArgs e)
-        {
-            m_currentBook = (e.OriginalSource as FrameworkElement).DataContext as BookViewModel;
-        }
-
         // 左键进入大纲视图。
         private void Books_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -255,6 +245,12 @@ namespace Writer
 
             m_currentBook = e.AddedItems[0] as BookViewModel;
             Outline_Click(null, null);
+        }
+
+        // 右键选中作品。
+        private void Books_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            m_currentBook = (e.OriginalSource as FrameworkElement).DataContext as BookViewModel;
         }
     }
 }
