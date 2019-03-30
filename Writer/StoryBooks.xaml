@@ -16,7 +16,7 @@
     <Grid>
         <Grid.Resources>
             <DataTemplate x:Key="DataTemplate_Book" x:DataType="vm:BookViewModel">
-                <Grid>
+                <Grid RightTapped="Books_RightTapped">
                     <StackPanel Margin="10" Width="150" Height="200">
                         <TextBox FontWeight="Bold" TextWrapping="Wrap" BorderThickness="0"
                                  PlaceholderText="请输入新作品的标题"
@@ -56,7 +56,6 @@
         <GridView x:Name="Books"
                   ItemTemplate="{StaticResource DataTemplate_Book}"
                   ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"
-                  RightTapped="Books_RightTapped"
                   SelectionChanged="Books_SelectionChanged"/>
 
         <Button x:Name="Add"
