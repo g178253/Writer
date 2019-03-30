@@ -20,15 +20,15 @@
                     <StackPanel Margin="10" Width="150" Height="200">
                         <TextBox FontWeight="Bold" TextWrapping="Wrap" BorderThickness="0"
                                  PlaceholderText="请输入新作品的标题"
-                                 Text="{x:Bind Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 IsReadOnly="{x:Bind IsReadOnly, Mode=OneWay}"
+                                 Text="{x:Bind Title.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{x:Bind Title.IsReadOnly, Mode=OneWay}"
                                  KeyUp="EditBookName_KeyUp"/>
                         <TextBlock Margin="0,5" Foreground="Red" TextWrapping="Wrap"
-                                   Text="{x:Bind Error, Mode=OneWay}"
-                                   Visibility="{x:Bind InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                                   Text="{x:Bind Title.Error, Mode=OneWay}"
+                                   Visibility="{x:Bind Title.InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
                     </StackPanel>
                     <!-- 用于覆盖文本框 -->
-                    <Border Background="Transparent" Visibility="{x:Bind IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                    <Border Background="Transparent" Visibility="{x:Bind Title.IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
                 </Grid>
             </DataTemplate>
             <MenuFlyout x:Key="MenuFlyout_Book">

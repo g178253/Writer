@@ -65,7 +65,7 @@ namespace Writer
             if (m_currentBook == null)
                 throw new ArgumentNullException(nameof(m_currentBook));
 
-            var bookName = m_currentBook.Name;
+            var bookName = m_currentBook.Title.Text;
             if (string.IsNullOrEmpty(bookName))
             {
                 SetError("请输入新作品的书名");
@@ -145,8 +145,8 @@ namespace Writer
 
         private void BeginEditBookName()
         {
-            m_currentBook.IsReadOnly = false;
-            m_lastName = m_currentBook.Name;
+            m_currentBook.Title.IsReadOnly = false;
+            m_lastName = m_currentBook.Title.Text;
         }
 
         private void EditBookName()
@@ -154,9 +154,9 @@ namespace Writer
             if (m_currentBook == null || m_lastName == null)
                 throw new ArgumentNullException((m_currentBook == null) ? nameof(m_currentBook) : nameof(m_lastName));
 
-            if (m_currentBook.IsReadOnly) return;
+            if (m_currentBook.Title.IsReadOnly) return;
 
-            var newName = m_currentBook.Name;
+            var newName = m_currentBook.Title.Text;
             if (string.IsNullOrEmpty(newName))
             {
                 SetError("请输入新的作品名");
@@ -176,7 +176,7 @@ namespace Writer
             }
 
             var book = m_currentBook;
-            book.Name = newName;
+            book.Title.Text = newName;
             if (m_story.Update(book.Model))
                 EndEditBookName();
             else
@@ -185,9 +185,9 @@ namespace Writer
 
         private void EndEditBookName()
         {
-            m_currentBook.IsReadOnly = true;
-            m_currentBook.InError = false;
-            m_currentBook.Error = null;
+            m_currentBook.Title.IsReadOnly = true;
+            m_currentBook.Title.InError = false;
+            m_currentBook.Title.Error = null;
         }
 
         private void CancelEdit()
@@ -205,8 +205,8 @@ namespace Writer
 
         private void SetError(string v)
         {
-            m_currentBook.InError = true;
-            m_currentBook.Error = v;
+            m_currentBook.Title.InError = true;
+            m_currentBook.Title.Error = v;
         }
 
         #endregion
@@ -216,13 +216,13 @@ namespace Writer
         {
             var book = m_currentBook;
             var r = await ShowWarningAsync(
-                $"删除作品【{book.Name}】后，将无法恢复。\n\n删除【{book.Name}】吗？",
+                $"删除作品【{book.Title.Text}】后，将无法恢复。\n\n删除【{book.Title.Text}】吗？",
                 "是的");
             if (!r) return;
 
             if (!m_story.Delete(book.Model))
             {
-                await ShowErrorAsync($"删除作品【{book.Name}】失败，请稍后重试……");
+                await ShowErrorAsync($"删除作品【{book.Title.Text}】失败，请稍后重试……");
             }
             else
             {
