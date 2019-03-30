@@ -1,0 +1,64 @@
+﻿<Page
+    x:Class="Writer.OutlineDetailView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Writer"
+    xmlns:vm="using:Writer.ViewModels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.Resources>
+            <DataTemplate x:Key="DataTemplate_Detail" x:DataType="vm:ItemDetailViewModel">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 标题 -->
+                    <Grid Grid.Row="0">
+                        <StackPanel>
+                            <TextBox TextWrapping="Wrap" BorderThickness="0"
+                                     Background="Transparent"
+                                     PlaceholderText="请输入标题"
+                                     Text="{x:Bind Title.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{x:Bind Title.IsReadOnly, Mode=OneWay}"/>
+                            <TextBlock TextWrapping="Wrap"
+                                       Foreground="Red"
+                                       Text="{x:Bind Title.Error, Mode=OneWay}"
+                                       Visibility="{x:Bind Title.InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                        </StackPanel>
+                        <Border Background="Transparent"
+                                Visibility="{x:Bind Title.IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                                Tapped="Title_Tapped"/>
+                    </Grid>
+                    
+                    <Line Grid.Row="1" X1="0" X2="300" Stroke="Black"/>
+                    
+                    <!-- 内容 -->
+                    <Grid Grid.Row="2">
+                        <StackPanel>
+                            <TextBox TextWrapping="Wrap" BorderThickness="0"
+                                     Background="Transparent"
+                                     PlaceholderText="请输入内容"
+                                     Text="{x:Bind Content.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{x:Bind Content.IsReadOnly, Mode=OneWay}"/>
+                            <TextBlock TextWrapping="Wrap"
+                                       Foreground="Red"
+                                       Text="{x:Bind Content.Error, Mode=OneWay}"
+                                       Visibility="{x:Bind Content.InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                        </StackPanel>
+                        <Border Background="Transparent"
+                                Visibility="{x:Bind Content.IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                                Tapped="Content_Tapped"/>
+                    </Grid>
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+        <GridView />
+    </Grid>
+</Page>
