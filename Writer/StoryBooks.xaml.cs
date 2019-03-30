@@ -78,7 +78,7 @@ namespace Writer
                 return;
             }
 
-            var m = m_story.Add(bookName);
+            var m = m_story.AddBook(bookName);
             if (m != null)
             {
                 m_currentBook.SetModel(m);
@@ -86,30 +86,6 @@ namespace Writer
 
             SetBookCount(m_list.Count);
             EndEditBookName();
-        }
-
-        private async Task ShowErrorAsync(string message)
-        {
-            var cd = new ContentDialog
-            {
-                Title = "出错啦",
-                Content = message,
-                CloseButtonText = "好的"
-            };
-            await cd.ShowAsync();
-        }
-
-        private async Task<bool> ShowWarningAsync(string message, string primaryButton)
-        {
-            var cd = new ContentDialog
-            {
-                Title = "警告",
-                Content = message,
-                CloseButtonText = "算了",
-                PrimaryButtonText = primaryButton
-            };
-            var r = await cd.ShowAsync();
-            return r == ContentDialogResult.Primary;
         }
 
         #region 编辑图书名
@@ -214,19 +190,19 @@ namespace Writer
         // 删除作品。
         private async void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var book = m_currentBook;
-            var r = await ShowWarningAsync(
-                $"删除作品【{book.Title.Text}】后，将无法恢复。\n\n删除【{book.Title.Text}】吗？",
+            var book = m_currentBook.Model;
+            var r = await Message.ShowWarningAsync(
+                $"删除作品【{book.Title}】后，该作品的相关内容也将一并删除。该操作**无法**恢复！\n\n删除【{book.Title}】吗？",
                 "是的");
             if (!r) return;
 
-            if (!m_story.Delete(book.Model))
+            if (!m_story.Delete(book))
             {
-                await ShowErrorAsync($"删除作品【{book.Title.Text}】失败，请稍后重试……");
+                await Message.ShowErrorAsync($"删除作品【{book.Title}】失败，请稍后重试……");
             }
             else
             {
-                m_list.Remove(book);
+                m_list.Remove(m_currentBook);
                 SetBookCount(m_list.Count);
             }
         }
