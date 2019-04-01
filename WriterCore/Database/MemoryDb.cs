@@ -34,6 +34,13 @@ namespace WriterCore.Database
             return fragment.Id;
         }
 
+        public long Add(Catalog catalog)
+        {
+            catalog.Id = s_catalogs.Count;
+            s_catalogs.Add(catalog.Id, catalog);
+            return catalog.Id;
+        }
+
         public bool ContainsBook(string bookName)
         {
             var books = from book in s_books.Values
@@ -50,6 +57,11 @@ namespace WriterCore.Database
         public bool Delete(Fragment fragment)
         {
             return s_fragments.Remove(fragment.Id);
+        }
+
+        public bool Delete(Catalog catalog)
+        {
+            return s_catalogs.Remove(catalog.Id);
         }
 
         public IEnumerable<Book> FindBooks()
@@ -97,6 +109,14 @@ namespace WriterCore.Database
             if (!s_fragments.ContainsKey(fragment.Id)) return false;
 
             s_fragments[fragment.Id] = fragment;
+            return true;
+        }
+
+        public bool Update(Catalog catalog)
+        {
+            if (!s_catalogs.ContainsKey(catalog.Id)) return false;
+
+            s_catalogs[catalog.Id] = catalog;
             return true;
         }
     }

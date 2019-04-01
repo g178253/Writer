@@ -52,11 +52,10 @@ namespace Writer
         // 添加新作品。
         private void AddNewBook_Click(object sender, RoutedEventArgs e)
         {
-            m_general.InEdit = false;
-
             m_current = new BookViewModel();
             m_list.Add(m_current);
 
+            m_general.InEdit = false;
             m_general.BeginEdit(m_current.Title);
         }
 
@@ -72,7 +71,7 @@ namespace Writer
                 return;
             }
 
-            if (m_story.Contains(bookName))
+            if (m_story.ContainsBook(bookName))
             {
                 m_general.SetError(m_current.Title, $"作品【{bookName}】已存在");
                 return;
@@ -97,7 +96,7 @@ namespace Writer
             m_general.BeginEdit(m_current.Title);
         }
 
-        // 添加、编辑或取消。
+        // 完成添加、编辑，或取消操作。
         private void EditBookName_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             if (e.Key == VirtualKey.Escape)
@@ -135,7 +134,7 @@ namespace Writer
                 return;
             }
 
-            if (m_story.Contains(newName))
+            if (m_story.ContainsBook(newName))
             {
                 m_general.SetError(m_current.Title, $"作品【{newName}】已经存在");
                 return;

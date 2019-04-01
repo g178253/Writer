@@ -14,18 +14,18 @@ namespace WriterCore
             this.m_db = DbFactory.Db;
         }
 
-        public bool Contains(string bookName)
+        public bool ContainsBook(string title)
         {
-            return m_db.ContainsBook(bookName);
+            return m_db.ContainsBook(title);
         }
 
-        public Book Add(string bookName)
+        public Book AddBook(string title)
         {
-            EnsureArgumentNotNull(bookName);
+            EnsureArgumentNotNull(title);
 
             var m = new Book
             {
-                Title = bookName,
+                Title = title,
                 CreateTime = DateTime.Now
             };
 
@@ -39,34 +39,76 @@ namespace WriterCore
             return null;
         }
 
-        public bool Add(Fragment fragment)
+        public Fragment AddFragment(Int64 bookId, Int64 catalogId, string title)
         {
-            EnsureArgumentNotNull(fragment);
-            return m_db.Add(fragment) > 0;
+            EnsureArgumentNotNull(title);
+
+            var m = new Fragment
+            {
+                BookId = bookId,
+                CatalogId = catalogId,
+                Title = title,
+                CreateTime = DateTime.Now
+            };
+
+            var id = m_db.Add(m);
+            if (id >= 0)
+            {
+                m.Id = id;
+                return m;
+            }
+
+            return null;
         }
 
-        public bool Update(Book book)
+        public Catalog AddCatalog(Int64 bookId, Int64 fatherId, string title)
         {
-            EnsureArgumentNotNull(book);
-            return m_db.Update(book);
+            EnsureArgumentNotNull(title);
+
+            var m = new Catalog
+            {
+                BookId = bookId,
+                FatherId = fatherId,
+                Title = title,
+                CreateTime = DateTime.Now
+            };
+
+            var id = m_db.Add(m);
+            if (id >= 0)
+            {
+                m.Id = id;
+                return m;
+            }
+
+            return null;
         }
 
-        public bool Update(Fragment fragment)
+        public bool Update(IOutline item)
         {
-            EnsureArgumentNotNull(fragment);
-            return m_db.Update(fragment);
+            EnsureArgumentNotNull(item);
+
+            if (item is Book)
+                return m_db.Update((Book)item);
+            else if (item is Catalog)
+                return m_db.Update((Catalog)item);
+            else if (item is Fragment)
+                return m_db.Update((Fragment)item);
+            else
+                throw new NotSupportedException("不支持的类型：" + item.GetType());
         }
 
-        public bool Delete(Book book)
+        public bool Delete(IOutline item)
         {
-            EnsureArgumentNotNull(book);
-            return m_db.Delete(book);
-        }
+            EnsureArgumentNotNull(item);
 
-        public bool Delete(Fragment fragment)
-        {
-            EnsureArgumentNotNull(fragment);
-            return m_db.Delete(fragment);
+            if (item is Book)
+                return m_db.Delete((Book)item);
+            else if (item is Fragment)
+                return m_db.Delete((Fragment)item);
+            else if (item is Catalog)
+                return m_db.Delete((Catalog)item);
+            else
+                throw new NotSupportedException("不支持的类型：" + item.GetType().ToString());
         }
 
         private void EnsureArgumentNotNull(object arg)

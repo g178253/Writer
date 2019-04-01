@@ -13,44 +13,59 @@
     <Page.Resources>
         <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
     </Page.Resources>
-    
+
     <Grid>
-        <SplitView IsPaneOpen="True" DisplayMode="CompactInline" OpenPaneLength="260">
+        <SplitView DisplayMode="CompactInline" IsPaneOpen="True" OpenPaneLength="300">
             <SplitView.Pane>
                 <Grid>
                     <Grid.Resources>
+                        <MenuFlyout x:Key="MenuFlyout_Outline">
+                            <MenuFlyoutItem x:Name="Edit"
+                                            Icon="Edit" Text="重命名"
+                                            Click="BeginEdit_Click"/>
+                        </MenuFlyout>
                         <DataTemplate x:Key="DataTemplate_Outline" x:DataType="vm:ItemViewModel">
-                            <Grid>
-                                <muxc:TreeViewItem ItemsSource="{x:Bind Children}"
-                                                   Content="{x:Bind Name}"
-                                                   Visibility="{x:Bind NotInEdit, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
-                                <StackPanel Visibility="{x:Bind InEdit, Mode=OneWay, Converter={StaticResource BoolToVisibility}}">
-                                    <TextBox TextWrapping="Wrap"
-                                             Text="{x:Bind NewName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <TextBlock TextWrapping="Wrap"
-                                               Foreground="Red"
-                                               Text="{x:Bind Error, Mode=OneWay}"/>
-                                </StackPanel>
-                            </Grid>
+                            <muxc:TreeViewItem ItemsSource="{x:Bind Children}"
+                                               ContextFlyout="{StaticResource MenuFlyout_Outline}"
+                                               RightTapped="TreeViewItem_RightTapped">
+                                <Grid>
+                                    <StackPanel>
+                                        <TextBox TextWrapping="Wrap" BorderThickness="0"
+                                                 Background="Transparent"
+                                                 PlaceholderText="请输入标题"
+                                                 VerticalAlignment="Center"
+                                                 Text="{x:Bind Title.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 IsReadOnly="{x:Bind Title.IsReadOnly, Mode=OneWay}"
+                                                 KeyUp="EditOrAdd_KeyUp"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Foreground="Red"
+                                                   Text="{x:Bind Title.Error, Mode=OneWay}"
+                                                   Visibility="{x:Bind Title.InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
+                                    <Border Background="Transparent"
+                                            Visibility="{x:Bind Title.IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                                </Grid>
+                            </muxc:TreeViewItem>
                         </DataTemplate>
                     </Grid.Resources>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <muxc:TreeView x:Name="Outline"
-                                   SelectionMode="Multiple"
-                                   ItemTemplate="{StaticResource DataTemplate_Outline}"/>
-
-                    <CommandBar Grid.Row="1">
-                        <AppBarButton Icon="Delete" Label="删除"
-                                      Click="AppBarButton_Click"/>
-                        <AppBarButton Icon="NewFolder" Label="添加目录"
-                                      Click="AddNewCatalog_Click"/>
-                        <AppBarButton Icon="Document" Label="添加文档"
-                                      Click="AddNewDocument_Click"/>
+                    <CommandBar>
+                        <AppBarButton Icon="Home" Label="主页" Click="Home_Click"/>
+                        <AppBarSeparator/>
+                        <AppBarButton x:Name="AddCatalog" Icon="NewFolder" Label="添加目录" Click="AddNewCatalog_Click"/>
+                        <AppBarButton x:Name="AddFragment" Icon="Document" Label="添加文档" Click="AddNewDocument_Click"/>
+                        <CommandBar.SecondaryCommands>
+                            <AppBarButton x:Name="Delete" Icon="Delete" Label="删除" Click="Delete_Click"/>
+                        </CommandBar.SecondaryCommands>
                     </CommandBar>
+
+                    <muxc:TreeView x:Name="Outline" Grid.Row="1"
+                                   ItemTemplate="{StaticResource DataTemplate_Outline}"
+                                   ItemInvoked="Outline_ItemInvoked"/>
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
