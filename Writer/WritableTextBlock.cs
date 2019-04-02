@@ -3,7 +3,7 @@ using Writer.ViewModels;
 
 namespace Writer
 {
-    internal sealed class General
+    internal sealed class WritableTextBlock
     {
         /// <summary>
         /// 当前处于编辑状态，则为 true；添加状态，则为 false。
@@ -53,7 +53,7 @@ namespace Writer
 
         public void ClearError(WritableTextBlockViewModel tb)
         {
-            tb.InError = true;
+            tb.InError = false;
             tb.Error = null;
         }
     }

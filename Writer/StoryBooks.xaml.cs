@@ -18,7 +18,7 @@ namespace Writer
     {
         private readonly Story m_story;
         private readonly ObservableCollection<BookViewModel> m_list; // 作品的集合。
-        private readonly General m_general; //通用操作。
+        private readonly WritableTextBlock m_general; //通用操作。
         private BookViewModel m_current;    // 当前作品。
 
         public StoryBooks()
@@ -27,7 +27,7 @@ namespace Writer
 
             m_story = new Story();
             m_list = new ObservableCollection<BookViewModel>();
-            m_general = new General();
+            m_general = new WritableTextBlock();
 
             Books.ItemsSource = m_list;
 

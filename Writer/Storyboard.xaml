@@ -33,7 +33,7 @@
                                         <TextBox TextWrapping="Wrap" BorderThickness="0"
                                                  Background="Transparent"
                                                  PlaceholderText="请输入标题"
-                                                 VerticalAlignment="Center"
+                                                 VerticalContentAlignment="Bottom"
                                                  Text="{x:Bind Title.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                  IsReadOnly="{x:Bind Title.IsReadOnly, Mode=OneWay}"
                                                  KeyUp="EditOrAdd_KeyUp"/>

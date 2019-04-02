@@ -19,7 +19,7 @@ namespace Writer
     {
         private readonly Story m_story = new Story();
         private readonly ItemViewModel m_root = new ItemViewModel(); // 图书。
-        private readonly General m_general = new General(); // 通用编辑框。
+        private readonly WritableTextBlock m_general = new WritableTextBlock(); // 通用编辑框。
 
         private ItemViewModel m_current = null; // 当前选中项。
 
@@ -138,7 +138,15 @@ namespace Writer
             }
             else
             {
-                m_root.Children.Remove(m_current);
+                if (object.Equals(m_root, m_current))
+                {
+                    Home_Click(null, null);
+                }
+                else
+                {
+                    var parent = GetParent(m_root, m_current);
+                    parent.Children.Remove(m_current);
+                }
             }
         }
 

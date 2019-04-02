@@ -120,7 +120,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BoolToVisibilityConverter.cs" />
-    <Compile Include="General.cs" />
+    <Compile Include="WritableTextBlock.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
