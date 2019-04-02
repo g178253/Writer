@@ -10,7 +10,7 @@ namespace Writer
         public MainPage()
         {
             this.InitializeComponent();
-            RootFrame.Navigate(typeof(StoryBooks));
+            RootFrame.Navigate(typeof(BooksView));
         }
     }
 }

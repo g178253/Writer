@@ -14,14 +14,14 @@ namespace Writer
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class StoryBooks : Page
+    public sealed partial class BooksView : Page
     {
         private readonly Story m_story;
         private readonly ObservableCollection<BookViewModel> m_list; // 作品的集合。
         private readonly WritableTextBlock m_general; //通用操作。
         private BookViewModel m_current;    // 当前作品。
 
-        public StoryBooks()
+        public BooksView()
         {
             this.InitializeComponent();
 
@@ -52,6 +52,7 @@ namespace Writer
         // 添加新作品。
         private void AddNewBook_Click(object sender, RoutedEventArgs e)
         {
+            Add.IsEnabled = false;
             m_current = new BookViewModel();
             m_list.Add(m_current);
 
@@ -112,6 +113,8 @@ namespace Writer
             {
                 m_general.AddOrEdit(EditBookName, CreateNewBook);
             }
+
+            Add.IsEnabled = true;
         }
 
         private void EditBookName()

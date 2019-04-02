@@ -24,7 +24,7 @@
                                             Icon="Edit" Text="重命名"
                                             Click="BeginEdit_Click"/>
                         </MenuFlyout>
-                        <DataTemplate x:Key="DataTemplate_Outline" x:DataType="vm:ItemViewModel">
+                        <DataTemplate x:Key="DataTemplate_Outline" x:DataType="vm:ItemDetailViewModel">
                             <muxc:TreeViewItem ItemsSource="{x:Bind Children}"
                                                ContextFlyout="{StaticResource MenuFlyout_Outline}"
                                                RightTapped="TreeViewItem_RightTapped">
@@ -53,7 +53,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <CommandBar>
+                    <CommandBar x:Name="OutlineBar">
                         <AppBarButton Icon="Home" Label="主页" Click="Home_Click"/>
                         <AppBarSeparator/>
                         <AppBarButton x:Name="AddCatalog" Icon="NewFolder" Label="添加目录" Click="AddNewCatalog_Click"/>
@@ -69,7 +69,66 @@
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                <Frame x:Name="DetailsFrame"/>
+                <Grid>
+                    <Grid.Resources>
+                        <DataTemplate x:Key="DataTemplate_Detail" x:DataType="vm:ItemDetailViewModel">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 标题 -->
+                                <Grid Grid.Row="0">
+                                    <StackPanel>
+                                        <TextBox TextWrapping="Wrap" BorderThickness="0"
+                                                 Background="Transparent"
+                                                 PlaceholderText="请输入标题"
+                                                 VerticalContentAlignment="Center"
+                                                 Text="{x:Bind Title.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 IsReadOnly="{x:Bind Title.IsReadOnly, Mode=OneWay}"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Foreground="Red"
+                                                   Text="{x:Bind Title.Error, Mode=OneWay}"
+                                                   Visibility="{x:Bind Title.InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
+                                    <Border Background="Transparent"
+                                            Visibility="{x:Bind Title.IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                                            Tapped="Title_Tapped"/>
+                                </Grid>
+
+                                <Line Grid.Row="1" X1="0" X2="200" Stroke="Black"/>
+
+                                <!-- 内容 -->
+                                <Grid Grid.Row="2">
+                                    <StackPanel>
+                                        <TextBox TextWrapping="Wrap" BorderThickness="0"
+                                                 Background="Transparent"
+                                                 PlaceholderText="请输入内容"
+                                                 VerticalContentAlignment="Center"
+                                                 Text="{x:Bind Content.Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 IsReadOnly="{x:Bind Content.IsReadOnly, Mode=OneWay}"/>
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Foreground="Red"
+                                                   Text="{x:Bind Content.Error, Mode=OneWay}"
+                                                   Visibility="{x:Bind Content.InError, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"/>
+                                    </StackPanel>
+                                    <Border Background="Transparent"
+                                            Visibility="{x:Bind Content.IsReadOnly, Mode=OneWay, Converter={StaticResource BoolToVisibility}}"
+                                            Tapped="Content_Tapped"/>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                        <ItemsPanelTemplate x:Key="ItemsPanelTemplate_Horizontal">
+                            <ItemsWrapGrid MaximumRowsOrColumns="10" Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </Grid.Resources>
+
+                    <GridView x:Name="Details"
+                              ItemTemplate="{StaticResource DataTemplate_Detail}"
+                              ItemsPanel="{StaticResource ItemsPanelTemplate_Horizontal}"/>
+                </Grid>
             </SplitView.Content>
         </SplitView>
     </Grid>

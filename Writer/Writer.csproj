@@ -119,28 +119,21 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BooksView.xaml.cs">
+      <DependentUpon>BooksView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="WritableTextBlock.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Message.cs" />
-    <Compile Include="OutlineDetailView.xaml.cs">
-      <DependentUpon>OutlineDetailView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OutlineView.xaml.cs">
-      <DependentUpon>OutlineView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storyboard.xaml.cs">
       <DependentUpon>Storyboard.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StoryBooks.xaml.cs">
-      <DependentUpon>StoryBooks.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModels\BookViewModel.cs" />
     <Compile Include="ViewModels\ItemDetailViewModel.cs" />
-    <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\FragmentViewModel.cs" />
     <Compile Include="ViewModels\NotifyPropertyChanged.cs" />
     <Compile Include="ViewModels\WritableTextBlockViewModel.cs" />
@@ -166,23 +159,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="BooksView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="OutlineDetailView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OutlineView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Storyboard.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StoryBooks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

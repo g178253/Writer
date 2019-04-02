@@ -18,10 +18,11 @@ namespace Writer
     public sealed partial class Storyboard : Page
     {
         private readonly Story m_story = new Story();
-        private readonly ItemViewModel m_root = new ItemViewModel(); // 图书。
+        private readonly ItemDetailViewModel m_root = new ItemDetailViewModel(); // 图书。
         private readonly WritableTextBlock m_general = new WritableTextBlock(); // 通用编辑框。
 
-        private ItemViewModel m_current = null; // 当前选中项。
+        private ItemDetailViewModel m_current = null; // 当前选中项。
+        private ItemDetailViewModel m_toAdd = null;   // 即将创建的新项。
 
         public Storyboard()
         {
@@ -48,7 +49,7 @@ namespace Writer
             var list = m_story.GetCatalogs(book.Model.Id);
             foreach (var i in list)
             {
-                var it = new ItemViewModel(i);
+                var it = new ItemDetailViewModel(i);
                 it.InitChildren();
                 m_root.Children.Add(it);
             }
@@ -85,6 +86,8 @@ namespace Writer
             if (m_current == null)
                 throw new ArgumentNullException(nameof(m_current));
 
+            OutlineBar.IsEnabled = false;
+
             var catalog = m_current;
             // 如果当前选中项是文档，需要找到其父节点，从父节点添加新章节。
             if (catalog.Model is Fragment)
@@ -92,7 +95,7 @@ namespace Writer
                 catalog = GetParent(m_root, catalog);
             }
 
-            var it = new ItemViewModel();
+            var it = new ItemDetailViewModel();
             if (isCatalog)
                 it.InitChildren();
             catalog.Children.Add(it);
@@ -100,10 +103,10 @@ namespace Writer
             m_general.InEdit = false;
             m_general.BeginEdit(it.Title);
 
-            m_current = it; // 当前选中项即是新增项。
+            m_toAdd = it;
         }
 
-        private ItemViewModel GetParent(ItemViewModel parent, ItemViewModel child)
+        private ItemDetailViewModel GetParent(ItemDetailViewModel parent, ItemDetailViewModel child)
         {
             if (object.Equals(parent, child)) return parent;
             if (parent.Children == null) return null;
@@ -155,8 +158,9 @@ namespace Writer
         // 选中章，加载章节内容。
         private void Outline_ItemInvoked(MUXC.TreeView sender, MUXC.TreeViewItemInvokedEventArgs args)
         {
-            m_current = args.InvokedItem as ItemViewModel;
             SetButtonStatus(true);
+            m_current = args.InvokedItem as ItemDetailViewModel;
+            Details.ItemsSource = m_current.Children;
         }
 
         private void SetButtonStatus(bool select)
@@ -175,7 +179,7 @@ namespace Writer
         // 右键选中条目。
         private void TreeViewItem_RightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            m_current = (e.OriginalSource as FrameworkElement).DataContext as ItemViewModel;
+            m_current = (e.OriginalSource as FrameworkElement).DataContext as ItemDetailViewModel;
         }
 
         // 完成编辑或添加。
@@ -193,6 +197,8 @@ namespace Writer
             {
                 m_general.AddOrEdit(EditTitle, CreateNew);
             }
+
+            OutlineBar.IsEnabled = true;
         }
 
         private void EditTitle()
@@ -226,28 +232,40 @@ namespace Writer
 
         private void CreateNew()
         {
-            if (m_current == null)
-                throw new ArgumentNullException(nameof(m_current));
+            if (m_toAdd == null)
+                throw new ArgumentNullException(nameof(m_toAdd));
 
-            var titleType = (m_current.Children == null) ? "章节名" : "卷名";
+            var titleType = (m_toAdd.Children == null) ? "章节名" : "卷名";
 
-            var name = m_current.Title.Text;
+            var name = m_toAdd.Title.Text;
             if (string.IsNullOrEmpty(name))
             {
-                m_general.SetError(m_current.Title, "请输入" + titleType);
+                m_general.SetError(m_toAdd.Title, "请输入" + titleType);
                 return;
             }
 
-            var parent = GetParent(m_root, m_current);
-            var m = (m_current.Children == null)
+            var parent = GetParent(m_root, m_toAdd);
+            var m = (m_toAdd.Children == null)
                 ? m_story.AddFragment(m_root.Model.Id, parent.Model.Id, name) as IOutline
                 : m_story.AddCatalog(m_root.Model.Id, parent.Model.Id, name);
             if (m != null)
             {
-                m_current.SetModel(m);
+                m_toAdd.SetModel(m);
             }
 
-            m_general.EndEdit(m_current.Title);
+            m_general.EndEdit(m_toAdd.Title);
+        }
+
+        // 选中标题，开始编辑标题。
+        private void Title_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
+
+        // 选中内容，开始编辑内容。
+        private void Content_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
     }
 }
